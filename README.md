@@ -8,6 +8,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/ElJijuna/very-simple-icons?style=flat-square)](https://github.com/ElJijuna/very-simple-icons/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/ElJijuna/very-simple-icons?style=flat-square)](https://github.com/ElJijuna/very-simple-icons/issues)
 [![GitHub last commit](https://img.shields.io/github/last-commit/ElJijuna/very-simple-icons?style=flat-square)](https://github.com/ElJijuna/very-simple-icons/commits/main)
+[![Docs](https://img.shields.io/badge/docs-online-60a5fa?style=flat-square)](https://eljijuna.github.io/very-simple-icons/)
 
 Map npm package names to [simple-icons](https://simpleicons.org/) icons. Handles scoped packages, hyphenated names, and version suffixes automatically.
 

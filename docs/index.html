@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>very-simple-icons — Map npm packages to icons</title>
+  <meta name="description" content="TypeScript library that maps npm package names to simple-icons SVG icons." />
+  <meta property="og:title" content="very-simple-icons" />
+  <meta property="og:description" content="Map npm package names to simple-icons SVG icons." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #09090b;
+      --bg-card:     #18181b;
+      --bg-input:    #27272a;
+      --border:      #3f3f46;
+      --text:        #fafafa;
+      --muted:       #a1a1aa;
+      --accent:      #60a5fa;
+      --accent-h:    #93c5fd;
+      --green:       #4ade80;
+      --r:           12px;
+      --r-sm:        8px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* ── Header ──────────────────────────────────────────────────────────── */
+    header {
+      padding: 4rem 0 3rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.6rem;
+    }
+    .logo span { color: var(--accent); }
+
+    .tagline { color: var(--muted); font-size: 1.05rem; margin-bottom: 1.75rem; }
+    .tagline a { color: var(--accent); text-decoration: none; }
+    .tagline a:hover { text-decoration: underline; }
+
+    .install-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 0.55rem 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 2px;
+      display: flex;
+      transition: color .15s;
+    }
+    .icon-btn:hover { color: var(--text); }
+    .icon-btn.ok { color: var(--green); }
+
+    /* ── Nav ─────────────────────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 0;
+    }
+    nav .inner {
+      display: flex;
+      justify-content: center;
+      gap: 1.75rem;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color .15s;
+    }
+    nav a:hover { color: var(--text); }
+
+    /* ── Sections ────────────────────────────────────────────────────────── */
+    section { padding: 3rem 0; }
+    section + section { border-top: 1px solid var(--border); }
+
+    .label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+    h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; }
+
+    /* ── Tabs ────────────────────────────────────────────────────────────── */
+    .tabs {
+      display: flex;
+      gap: 0.2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 0.2rem;
+      width: fit-content;
+      margin-bottom: 1.5rem;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      padding: 0.4rem 1.1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .tab-btn.active { background: var(--bg-input); color: var(--text); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Inputs ──────────────────────────────────────────────────────────── */
+    .input-row { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; }
+
+    input[type="text"], textarea {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      padding: 0.6rem 1rem;
+      outline: none;
+      transition: border-color .15s;
+      width: 100%;
+    }
+    input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+    textarea { resize: vertical; min-height: 200px; font-size: 0.8rem; }
+
+    .btn {
+      background: var(--accent);
+      border: none;
+      border-radius: var(--r-sm);
+      color: #000;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.6rem 1.25rem;
+      white-space: nowrap;
+      transition: background .15s;
+    }
+    .btn:hover { background: var(--accent-h); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-ghost {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .btn-ghost:hover { background: var(--bg-input); color: var(--text); }
+    .btn-sm {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 0.28rem 0.7rem;
+      transition: all .15s;
+    }
+    .btn-sm:hover { color: var(--text); border-color: var(--muted); }
+    .btn-sm.ok { color: var(--green); border-color: var(--green); }
+
+    /* ── Icon result (single) ────────────────────────────────────────────── */
+    .icon-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.5rem;
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .icon-thumb {
+      width: 80px;
+      height: 80px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--r-sm);
+      background: var(--bg-input);
+    }
+    .icon-thumb img { width: 44px; height: 44px; }
+    .icon-info { flex: 1; min-width: 0; }
+    .icon-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .tag {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.73rem;
+      padding: 0.18rem 0.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+    /* ── Icon grid (package.json) ────────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 0.65rem;
+    }
+    .grid-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 1rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s, transform .1s;
+      position: relative;
+    }
+    .grid-item:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .grid-item img { width: 30px; height: 30px; }
+    .grid-item-title { font-size: 0.78rem; font-weight: 600; }
+    .grid-item-pkg {
+      font-size: 0.68rem;
+      color: var(--muted);
+      word-break: break-all;
+      line-height: 1.3;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .missing-list { margin-top: 1.5rem; }
+    .missing-list h3 {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.65rem;
+    }
+    .missing-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .missing-tag {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.18rem 0.55rem;
+      color: var(--muted);
+    }
+
+    /* ── Steps ───────────────────────────────────────────────────────────── */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.25rem;
+    }
+    .step-n { font-size: 0.7rem; font-weight: 700; color: var(--accent); margin-bottom: 0.4rem; }
+    .step h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .step p { font-size: 0.85rem; color: var(--muted); line-height: 1.55; }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.83em;
+      background: var(--bg-input);
+      padding: .1em .35em;
+      border-radius: 4px;
+    }
+
+    /* ── States ──────────────────────────────────────────────────────────── */
+    .empty {
+      background: var(--bg-card);
+      border: 1px dashed var(--border);
+      border-radius: var(--r);
+      padding: 2.75rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      margin: 0 auto .65rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Tooltip ─────────────────────────────────────────────────────────── */
+    .tip-wrap { position: relative; }
+    .tip {
+      position: absolute;
+      bottom: calc(100% + 5px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--bg);
+      font-size: 0.72rem;
+      padding: .2rem .45rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s;
+    }
+    .tip-wrap:hover .tip { opacity: 1; }
+
+    /* ── Summary bar ─────────────────────────────────────────────────────── */
+    .summary {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .summary strong { color: var(--text); }
+
+    /* ── Footer ──────────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    footer a { color: var(--muted); text-decoration: none; transition: color .15s; }
+    footer a:hover { color: var(--text); }
+
+    /* ── Animations ──────────────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp .2s ease forwards; }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      header { padding: 2.5rem 0 2rem; }
+      .logo  { font-size: 1.5rem; }
+      .icon-card { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .icon-thumb { width: 64px; height: 64px; }
+      .icon-thumb img { width: 36px; height: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<header>
+  <div class="container">
+    <div class="logo">very-simple-icons<span>.</span></div>
+    <p class="tagline">
+      Map npm package names to <a href="https://simpleicons.org" target="_blank" rel="noopener">simple-icons</a> SVG icons
+    </p>
+    <div class="install-wrap">
+      <span id="install-cmd">npm install very-simple-icons simple-icons</span>
+      <button class="icon-btn" id="copy-install" onclick="copyInstall()" title="Copy">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ── Nav ────────────────────────────────────────────────────────────────── -->
+<nav>
+  <div class="inner">
+    <a href="#demo">Demo</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="https://github.com/ElJijuna/very-simple-icons" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.npmjs.com/package/very-simple-icons" target="_blank" rel="noopener">npm</a>
+  </div>
+</nav>
+
+<!-- ── Main ───────────────────────────────────────────────────────────────── -->
+<main>
+
+  <!-- Demo -->
+  <section id="demo">
+    <div class="container">
+      <div class="label">Playground</div>
+      <h2>Try it</h2>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('single')">Single package</button>
+        <button class="tab-btn" onclick="switchTab('json')">package.json</button>
+      </div>
+
+      <!-- Single -->
+      <div class="tab-panel active" id="panel-single">
+        <div class="input-row">
+          <input
+            type="text"
+            id="pkg-input"
+            placeholder="e.g. @tanstack/react-query, react-dom, typescript…"
+            autocomplete="off"
+            spellcheck="false"
+            oninput="onSingleInput()"
+          />
+        </div>
+        <div id="single-result">
+          <div class="empty">Enter a package name above to see its icon</div>
+        </div>
+      </div>
+
+      <!-- JSON -->
+      <div class="tab-panel" id="panel-json">
+        <textarea
+          id="json-input"
+          placeholder='Paste your package.json here…'
+          spellcheck="false"
+        ></textarea>
+        <div style="display:flex;gap:.5rem;margin:.75rem 0 1.25rem">
+          <button class="btn" onclick="analyzeJson()">Analyze</button>
+          <button class="btn btn-ghost" onclick="loadExample()">Load example</button>
+        </div>
+        <div id="json-result">
+          <div class="empty">Paste a package.json and click Analyze</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how-it-works">
+    <div class="container">
+      <div class="label">Under the hood</div>
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">01</div>
+          <h3>Normalize the name</h3>
+          <p>Strips version suffixes and extracts the org scope from packages like <code>@tanstack/react-query</code> → tries <code>tanstack</code> first.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">02</div>
+          <h3>Apply overrides</h3>
+          <p>A curated map handles edge cases: <code>react-dom</code> → <code>react</code>, <code>node</code> → <code>nodedotjs</code>, <code>next</code> → <code>nextdotjs</code>.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">03</div>
+          <h3>Resolve the icon</h3>
+          <p>Tries each slug candidate against <a href="https://simpleicons.org" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">simple-icons</a>. Returns the first match or <code>undefined</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-links">
+      <a href="https://github.com/ElJijuna/very-simple-icons" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.npmjs.com/package/very-simple-icons" target="_blank" rel="noopener">npm</a>
+      <a href="https://simpleicons.org" target="_blank" rel="noopener">simple-icons</a>
+    </div>
+    <p>MIT License · Built by <a href="https://github.com/ElJijuna" target="_blank" rel="noopener">ElJijuna</a></p>
+  </div>
+</footer>
+
+<script>
+// ── Normalization (mirrors src/normalize.ts + src/overrides.ts) ──────────────
+
+const OVERRIDES = {
+  'node':          'nodedotjs',
+  'nodejs':        'nodedotjs',
+  'react-dom':     'react',
+  'reactdom':      'react',
+  'react-native':  'react',
+  'reactnative':   'react',
+  'next':          'nextdotjs',
+  'nextjs':        'nextdotjs',
+  'nuxt':          'nuxtdotjs',
+  'nuxtjs':        'nuxtdotjs',
+  'vue':           'vuedotjs',
+}
+
+function normalizePkg(input) {
+  const out = []
+  let name = input.trim().toLowerCase().replace(/@\d.*$/, '')
+  const m = name.match(/^@([^/]+)\/(.+)$/)
+  if (m) {
+    const [, scope, pkg] = m
+    out.push(scope, pkg, pkg.replace(/-/g, ''))
+  } else {
+    out.push(name, name.replace(/-/g, ''))
+  }
+  return [...new Set(out)]
+}
+
+// ── Icon fetch (cdn.simpleicons.org) ─────────────────────────────────────────
+
+const cache = new Map()
+
+async function fetchBySlug(raw) {
+  const slug = OVERRIDES[raw] ?? raw
+  if (cache.has(slug)) return cache.get(slug)
+  try {
+    const res = await fetch(`https://cdn.simpleicons.org/${encodeURIComponent(slug)}`)
+    if (!res.ok) { cache.set(slug, null); return null }
+    const svg = await res.text()
+    const title = svg.match(/<title>([^<]+)<\/title>/)?.[1] ?? slug
+    const hex   = svg.match(/fill="#([A-Fa-f0-9]{6})"/i)?.[1] ?? '888888'
+    const icon  = { slug, title, hex, svg }
+    cache.set(slug, icon)
+    return icon
+  } catch { return null }
+}
+
+async function getIcon(pkgName) {
+  for (const c of normalizePkg(pkgName)) {
+    const icon = await fetchBySlug(c)
+    if (icon) return icon
+  }
+  return null
+}
+
+function iconImgUrl(slug) {
+  return `https://cdn.simpleicons.org/${encodeURIComponent(slug)}`
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+
+function switchTab(tab) {
+  const isSingle = tab === 'single'
+  document.querySelectorAll('.tab-btn').forEach((b, i) =>
+    b.classList.toggle('active', i === 0 ? isSingle : !isSingle)
+  )
+  document.getElementById('panel-single').classList.toggle('active', isSingle)
+  document.getElementById('panel-json').classList.toggle('active', !isSingle)
+}
+
+// ── Single lookup ─────────────────────────────────────────────────────────────
+
+let debounce = null
+// Store last result for copy handlers
+let lastResult = null
+
+function onSingleInput() {
+  clearTimeout(debounce)
+  const val = document.getElementById('pkg-input').value.trim()
+  if (!val) {
+    setResult('single-result', '<div class="empty">Enter a package name above to see its icon</div>')
+    lastResult = null
+    return
+  }
+  setResult('single-result', '<div class="empty"><div class="spinner"></div>Looking up…</div>')
+  debounce = setTimeout(() => lookupSingle(val), 380)
+}
+
+async function lookupSingle(name) {
+  const icon = await getIcon(name)
+  lastResult = icon
+  if (!icon) {
+    setResult('single-result',
+      `<div class="empty">No icon found for <code>${esc(name)}</code></div>`)
+    return
+  }
+  setResult('single-result', `
+    <div class="icon-card fade-up">
+      <div class="icon-thumb">
+        <img src="${iconImgUrl(icon.slug)}" alt="${esc(icon.title)}" />
+      </div>
+      <div class="icon-info">
+        <div class="icon-name">${esc(icon.title)}</div>
+        <div class="tags">
+          <span class="tag">slug: <strong>${esc(icon.slug)}</strong></span>
+          <span class="tag">
+            <span class="dot" style="background:#${icon.hex}"></span>#${icon.hex}
+          </span>
+        </div>
+        <div class="actions">
+          <button class="btn-sm" onclick="copyLast(this,'svg')">Copy SVG</button>
+          <button class="btn-sm" onclick="copyLast(this,'hex')">Copy hex</button>
+          <button class="btn-sm" onclick="copyLast(this,'slug')">Copy slug</button>
+        </div>
+      </div>
+    </div>`)
+}
+
+function copyLast(btn, field) {
+  if (!lastResult) return
+  const val = field === 'svg' ? lastResult.svg
+            : field === 'hex' ? `#${lastResult.hex}`
+            : lastResult.slug
+  flashCopy(btn, val)
+}
+
+// ── package.json analyzer ─────────────────────────────────────────────────────
+
+// Map of pkg name → icon for grid copy handlers
+const gridResults = new Map()
+
+async function analyzeJson() {
+  const raw = document.getElementById('json-input').value.trim()
+  if (!raw) return
+
+  let pkg
+  try { pkg = JSON.parse(raw) } catch {
+    setResult('json-result',
+      '<div class="empty">Invalid JSON — check your package.json syntax</div>')
+    return
+  }
+
+  const fields = ['dependencies','devDependencies','peerDependencies','optionalDependencies']
+  const names  = [...new Set(fields.flatMap(f => Object.keys(pkg[f] ?? {})))]
+
+  if (!names.length) {
+    setResult('json-result',
+      '<div class="empty">No dependencies found in this package.json</div>')
+    return
+  }
+
+  setResult('json-result',
+    `<div class="empty"><div class="spinner"></div>Resolving ${names.length} package${names.length > 1 ? 's' : ''}…</div>`)
+
+  const all = await Promise.all(names.map(n => getIcon(n).then(icon => ({ name: n, icon }))))
+  const found   = all.filter(r => r.icon)
+  const missing = all.filter(r => !r.icon)
+
+  gridResults.clear()
+  found.forEach(({ name, icon }) => gridResults.set(name, icon))
+
+  const grid = found.map(({ name, icon }) => `
+    <div class="grid-item tip-wrap fade-up" onclick="copyGridSlug(this,'${esc(name)}')" title="${esc(icon.title)}">
+      <img src="${iconImgUrl(icon.slug)}" alt="${esc(icon.title)}" loading="lazy" />
+      <div class="grid-item-title">${esc(icon.title)}</div>
+      <div class="grid-item-pkg">${esc(name)}</div>
+      <span class="tip">Copy slug</span>
+    </div>`).join('')
+
+  const missingHtml = missing.length ? `
+    <div class="missing-list">
+      <h3>${missing.length} package${missing.length > 1 ? 's' : ''} without icon</h3>
+      <div class="missing-tags">
+        ${missing.map(r => `<span class="missing-tag">${esc(r.name)}</span>`).join('')}
+      </div>
+    </div>` : ''
+
+  setResult('json-result', `
+    <p class="summary">
+      Found <strong>${found.length}</strong> icons out of ${names.length} packages
+    </p>
+    <div class="grid">${grid}</div>
+    ${missingHtml}`)
+}
+
+function copyGridSlug(el, name) {
+  const icon = gridResults.get(name)
+  if (!icon) return
+  navigator.clipboard.writeText(icon.slug)
+  const orig = el.querySelector('.tip').textContent
+  el.querySelector('.tip').textContent = 'Copied!'
+  setTimeout(() => { el.querySelector('.tip').textContent = orig }, 1400)
+}
+
+// ── Example ───────────────────────────────────────────────────────────────────
+
+function loadExample() {
+  document.getElementById('json-input').value = JSON.stringify({
+    dependencies: {
+      'react':                 '^18.3.0',
+      'react-dom':             '^18.3.0',
+      '@tanstack/react-query': '^5.0.0',
+      'next':                  '^14.0.0',
+      'typescript':            '^5.0.0',
+      'tailwindcss':           '^3.4.0',
+      'prisma':                '^5.0.0',
+      'zod':                   '^3.22.0',
+      'axios':                 '^1.6.0',
+    },
+    devDependencies: {
+      'vite':         '^5.0.0',
+      'vitest':       '^2.0.0',
+      'eslint':       '^9.0.0',
+      '@types/node':  '^20.0.0',
+    },
+  }, null, 2)
+}
+
+// ── Copy helpers ──────────────────────────────────────────────────────────────
+
+function copyInstall() {
+  const text = document.getElementById('install-cmd').textContent
+  navigator.clipboard.writeText(text)
+  const btn = document.getElementById('copy-install')
+  btn.classList.add('ok')
+  setTimeout(() => btn.classList.remove('ok'), 1400)
+}
+
+function flashCopy(btn, text) {
+  navigator.clipboard.writeText(text)
+  const orig = btn.textContent
+  btn.textContent = 'Copied!'
+  btn.classList.add('ok')
+  setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok') }, 1400)
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function setResult(id, html) {
+  document.getElementById(id).innerHTML = html
+}
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+</script>
+</body>
+</html>
