@@ -2,10 +2,7 @@
   "name": "very-simple-icons",
   "version": "1.0.0",
   "description": "Map npm package names to simple-icons icons",
-  "author": {
-    "name": "pilmee",
-    "url": "https://github.com/ElJijuna"
-  },
+  "author": "pilmee <pilmee@gmail.com> (https://github.com/ElJijuna)",
   "repository": {
     "type": "git",
     "url": "https://github.com/ElJijuna/very-simple-icons.git"
