@@ -56,16 +56,16 @@
     "simple-icons": ">=14"
   },
   "devDependencies": {
-    "simple-icons": "^16",
-    "typescript": "^5",
-    "tsup": "^8",
-    "vitest": "^2",
-    "semantic-release": "^24",
-    "@semantic-release/changelog": "^6",
-    "@semantic-release/git": "^10",
-    "@semantic-release/github": "^10",
+    "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13",
-    "@semantic-release/release-notes-generator": "^14",
-    "@semantic-release/npm": "^12"
+    "@semantic-release/git": "^10",
+    "@semantic-release/github": "^12.0.8",
+    "@semantic-release/npm": "^13.1.5",
+    "@semantic-release/release-notes-generator": "^14.1.1",
+    "semantic-release": "^25.0.3",
+    "simple-icons": "^16",
+    "tsup": "^8.5.1",
+    "typescript": "^5",
+    "vitest": "^4.1.8"
   }
 }
