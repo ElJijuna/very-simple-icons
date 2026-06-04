@@ -1,0 +1,42 @@
+name: Publish release post to DEV
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  publish-devto:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Publish article to DEV
+        env:
+          DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+          PACKAGE_NAME: ${{ github.event.repository.name }}
+          VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+        run: |
+          BODY=$(
+            jq -n \
+              --arg title "$PACKAGE_NAME $VERSION released" \
+              --arg body "New version published: **$PACKAGE_NAME $VERSION**\n\nSee release: $RELEASE_URL\n\n## Changes\n\n$RELEASE_BODY" \
+              '{
+                article: {
+                  title: $title,
+                  published: true,
+                  tags: "javascript, opensource, npm, icons",
+                  body_markdown: $body
+                }
+              }'
+          )
+
+          curl --fail-with-body --show-error --silent -X POST "https://dev.to/api/articles" \
+            -H "Accept: application/vnd.forem.api-v1+json" \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: very-simple-icons-release-workflow" \
+            -H "api-key: $DEVTO_API_KEY" \
+            -d "$BODY"
